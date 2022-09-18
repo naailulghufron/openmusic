@@ -5,8 +5,8 @@ const SongPayloadSchema = Joi.object({
   year: Joi.number().required(),
   genre: Joi.string().required(),
   performer: Joi.string().required(),
-  duration: Joi.number().required(),
-  albumId: Joi.string(),
+  duration: Joi.number().allow(null),
+  albumId: Joi.string().allow(null),
   // tags: Joi.array().items(Joi.string()).required(),
 });
 
