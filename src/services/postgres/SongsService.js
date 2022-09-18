@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
-const { mapDBToModel } = require('../../utils/songs');
+const { mapDBToModelSongs } = require('../../utils/songs');
 const NotFoundError = require('../../exceptions/NotFoundError');
  
 class SongsService {
@@ -30,7 +30,7 @@ class SongsService {
 
     async getSongs() {
       const result = await this._pool.query('SELECT id, title, performer FROM songs');
-      return result.rows.map(mapDBToModel);
+      return result.rows.map(mapDBToModelSongs);
     }
 
   async getSongById(id) {
@@ -44,7 +44,7 @@ class SongsService {
       throw new NotFoundError('Catatan tidak ditemukan');
     }
  
-    return result.rows.map(mapDBToModel)[0];
+    return result.rows.map(mapDBToModelSongs)[0];
   }
 
   async editSongById(id, { title, year, genre, performer, duration, albumId = '' }) {
