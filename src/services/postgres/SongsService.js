@@ -28,8 +28,9 @@ class SongsService {
     return result.rows[0].id;
   }
 
-    async getSongs() {
-      const result = await this._pool.query('SELECT id, title, performer FROM songs');
+    async getSongs(title = '%%', performer = '%%') {
+      const filter = `WHERE LOWER(title) like '%${title}%' and LOWER(performer) like '%${performer}%'`
+      const result = await this._pool.query(`SELECT id, title, performer FROM songs ${filter}`);
       return result.rows.map(mapDBToModelSongs);
     }
 
