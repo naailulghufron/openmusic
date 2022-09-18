@@ -10,7 +10,7 @@ class SongsService {
   }
  
   async addSong({ title, year, genre, performer, duration, albumId = '' }) {
-    const id = nanoid(16);
+    const id = `song-${nanoid(16)}`;
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
  
@@ -28,11 +28,11 @@ class SongsService {
     return result.rows[0].id;
   }
 
-    async getSongs(title = '%%', performer = '%%') {
-      const filter = `WHERE LOWER(title) like '%${title}%' and LOWER(performer) like '%${performer}%'`
-      const result = await this._pool.query(`SELECT id, title, performer FROM songs ${filter}`);
-      return result.rows.map(mapDBToModelSongs);
-    }
+  async getSongs(title = '%%', performer = '%%') {
+    const filter = `WHERE LOWER(title) like '%${title}%' and LOWER(performer) like '%${performer}%'`
+    const result = await this._pool.query(`SELECT id, title, performer FROM songs ${filter}`);
+    return result.rows.map(mapDBToModelSongs);
+  }
 
   async getSongById(id) {
     const query = {
