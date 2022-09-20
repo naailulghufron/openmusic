@@ -1,23 +1,23 @@
 const ClientError = require('../../exceptions/ClientError');
- 
+
 class SongsHandler {
   constructor(service, validator) {
     this._service = service;
     this._validator = validator;
- 
+
     this.postSongHandler = this.postSongHandler.bind(this);
     this.getSongsHandler = this.getSongsHandler.bind(this);
     this.getSongByIdHandler = this.getSongByIdHandler.bind(this);
     this.putSongByIdHandler = this.putSongByIdHandler.bind(this);
     this.deleteSongByIdHandler = this.deleteSongByIdHandler.bind(this);
   }
- 
+
   async postSongHandler(request, h) {
     try {
       this._validator.validateSongPayload(request.payload);
 
       const songId = await this._service.addSong(request.payload);
- 
+
       const response = h.response({
         status: 'success',
         message: 'Catatan berhasil ditambahkan',
@@ -36,7 +36,7 @@ class SongsHandler {
         response.code(error.statusCode);
         return response;
       }
- 
+
       // Server ERROR!
       const response = h.response({
         status: 'error',
@@ -47,9 +47,9 @@ class SongsHandler {
       return response;
     }
   }
- 
+
   async getSongsHandler(request, h) {
-    const {title, performer} = request.query;
+    const { title, performer } = request.query;
     const songs = await this._service.getSongs(title, performer);
     // Hati-hati! Sebenarnya this._service.getSongs() bisa membangkitkan error bila terjadi sesuatu dengan database kamu. Untuk itu, sebaiknya terapkan juga error handling di sini seperti pada request handler lainnya
     return {
@@ -59,7 +59,7 @@ class SongsHandler {
       },
     };
   }
- 
+
   async getSongByIdHandler(request, h) {
     try {
       const { id } = request.params;
@@ -79,7 +79,7 @@ class SongsHandler {
         response.code(error.statusCode);
         return response;
       }
- 
+
       // Server ERROR!
       const response = h.response({
         status: 'error',
@@ -90,15 +90,19 @@ class SongsHandler {
       return response;
     }
   }
- 
+
   async putSongByIdHandler(request, h) {
     try {
       this._validator.validateSongPayload(request.payload);
-      const { title, year, genre, performer, duration, albumId } = request.payload;
+      const {
+        title, year, genre, performer, duration, albumId,
+      } = request.payload;
       const { id } = request.params;
- 
-      await this._service.editSongById(id, { title, year, genre, performer, duration, albumId });
- 
+
+      await this._service.editSongById(id, {
+        title, year, genre, performer, duration, albumId,
+      });
+
       return {
         status: 'success',
         message: 'Catatan berhasil diperbarui',
@@ -112,7 +116,7 @@ class SongsHandler {
         response.code(error.statusCode);
         return response;
       }
- 
+
       // Server ERROR!
       const response = h.response({
         status: 'error',
@@ -123,12 +127,12 @@ class SongsHandler {
       return response;
     }
   }
- 
+
   async deleteSongByIdHandler(request, h) {
     try {
       const { id } = request.params;
       await this._service.deleteSongById(id);
- 
+
       return {
         status: 'success',
         message: 'Catatan berhasil dihapus',
@@ -142,7 +146,7 @@ class SongsHandler {
         response.code(error.statusCode);
         return response;
       }
- 
+
       // Server ERROR!
       const response = h.response({
         status: 'error',
@@ -154,5 +158,5 @@ class SongsHandler {
     }
   }
 }
- 
+
 module.exports = SongsHandler;
