@@ -11,12 +11,11 @@ class SongsService {
  
   async addSong({ title, year, genre, performer, duration, albumId }) {
     const id = `song-${nanoid(16)}`;
-    const createdAt = new Date().toISOString();
-    const updatedAt = createdAt;
+    const insertedAt = new Date().toISOString(); 
  
     const query = {
-      text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
-      values: [id, title, year, genre, performer, duration, albumId, createdAt, updatedAt],
+      text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7, $8, $8) RETURNING id',
+      values: [id, title, year, genre, performer, duration, albumId, insertedAt],
     };
  
     const result = await this._pool.query(query);
@@ -28,10 +27,13 @@ class SongsService {
     return result.rows[0].id;
   }
 
-  async getSongs(title = '%%', performer = '%%') {
-    const filter = `WHERE LOWER(title) like '%${title}%' and LOWER(performer) like '%${performer}%'`
-    const result = await this._pool.query(`SELECT id, title, performer FROM songs ${filter}`);
-    return result.rows.map(mapDBToModelSongs);
+ async getSongs(title = '', performer = '') {
+    const query = {
+      text: 'SELECT id, title, performer FROM songs WHERE title ILIKE $1 AND performer ILIKE $2',
+      values: [`%${title}%`, `%${performer}%`],
+    };
+    const { rows } = await this._pool.query(query);
+    return rows;
   }
 
   async getSongById(id) {
@@ -41,7 +43,7 @@ class SongsService {
     };
     const result = await this._pool.query(query);
  
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundError('Catatan tidak ditemukan');
     }
  

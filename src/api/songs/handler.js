@@ -15,9 +15,8 @@ class SongsHandler {
   async postSongHandler(request, h) {
     try {
       this._validator.validateSongPayload(request.payload);
-      const { title, year, genre, performer, duration, albumId } = request.payload;
- 
-      const songId = await this._service.addSong({ title, year, genre, performer, duration, albumId });
+
+      const songId = await this._service.addSong(request.payload);
  
       const response = h.response({
         status: 'success',
@@ -52,6 +51,7 @@ class SongsHandler {
   async getSongsHandler(request, h) {
     const {title, performer} = request.query;
     const songs = await this._service.getSongs(title, performer);
+    // Hati-hati! Sebenarnya this._service.getSongs() bisa membangkitkan error bila terjadi sesuatu dengan database kamu. Untuk itu, sebaiknya terapkan juga error handling di sini seperti pada request handler lainnya
     return {
       status: 'success',
       data: {
